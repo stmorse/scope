@@ -5,6 +5,7 @@ from typing import List, Tuple
 from tqdm import tqdm
 from agent.Local_LLM import Local_LLM
 from agent.Online_LLM import Online_LLM
+from agent.Ollama_LLM import Ollama_LLM
 from agent.Conversation import Conversation, HUMAN_SIM, HUMAN_EVAL, LLM, get_role
 
 DEBUG = False
@@ -23,6 +24,8 @@ class Model:
         # Initialise human model
         if self.config["type"] == "local":
             LLM_class = Local_LLM
+        elif self.config["type"] == "ollama":
+            LLM_class = Ollama_LLM
         else:
             LLM_class = Online_LLM
         self.model = LLM_class(
