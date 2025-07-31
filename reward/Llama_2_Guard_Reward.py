@@ -7,7 +7,7 @@ from agent.Conversation import Conversation
 # Use Meta-Llama-Guard-2-8B safe probability as reward model.
 # The reward is the difference between the safe probability of the chat with the human response and the safe probability of the chat without the human response.
 class Llama_2_Guard_Reward(Base_Reward):
-    def __init__(self, model = None, device_map : int = 0, random_projection : int | None = 1024, random_proj_seed = 42) -> None:
+    def __init__(self, model = None, device_map : int = 0, random_projection : int | None = 1024, random_proj_seed = 42, maximize_harm: bool = False) -> None:
         name_or_path = "meta-llama/Meta-Llama-Guard-2-8B"
         try:
             assert model.name_or_path == name_or_path
@@ -54,6 +54,7 @@ class Llama_2_Guard_Reward(Base_Reward):
         self.proj_A = self.proj_A.to(self.model.device)
         self.proj_B = self.proj_B.to(self.model.device)
         torch.cuda.empty_cache()
+        self.maximize_harm = maximize_harm
 
     # Get the probability of the chat being safe
     def get_safe_prob(self, chat : List[dict] | List[List[dict]]) -> float | list[float]:
@@ -73,23 +74,22 @@ class Llama_2_Guard_Reward(Base_Reward):
                 score_after = self.get_safe_prob((prev_state + action).create_chat())
                 score_before =  self.get_safe_prob(prev_state.create_chat())
                 reward = (score_after - score_before)
-                # print("before multipling reward is ", reward)
-                return 1000 * reward
+                reward = 1000 * reward
             else: # if semantic
                 reward = self.get_safe_prob_from_embedding(torch.FloatTensor(prev_state) + torch.FloatTensor(action)) - self.get_safe_prob_from_embedding(torch.FloatTensor((prev_state)))
-                # print("before multipling reward is ", reward)
-                return 1000 * reward
+                reward = 1000 * reward
         
-        if isinstance(prev_state, Conversation):
+        elif isinstance(prev_state, Conversation):
             score_after = self.get_safe_prob((prev_state + action + human_response).create_chat())
             score_before =  self.get_safe_prob(prev_state.create_chat())
             reward = (score_after - score_before)
-            # print("before multipling reward is ", reward)
-            return 1000 * reward
+            reward = 1000 * reward
         else:
             reward = self.get_safe_prob_from_embedding(torch.FloatTensor((human_response))) - self.get_safe_prob_from_embedding(torch.FloatTensor((prev_state)))
-            # print("before multipling reward is ", reward)
-            return 1000 * reward
+            reward = 1000 * reward
+        if self.maximize_harm:
+            reward = -reward
+        return reward
     
     # Use the model to embed the chat into a 8192 dim vector
     def embed(self, chat : Conversation | List[Conversation] | List[dict] | List[List[dict]]) -> torch.tensor:

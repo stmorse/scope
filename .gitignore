@@ -3,3 +3,5 @@ venv
 transition_models/deterministic
 
 __pycache__/
+
+manifests/hf_token.yaml
