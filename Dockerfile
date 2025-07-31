@@ -1,5 +1,9 @@
 FROM pytorch/pytorch:2.5.1-cuda12.4-cudnn9-runtime
 
+RUN apt update && apt install -y \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+    
 # upgrade pip
 RUN pip install --upgrade pip setuptools wheel
 
