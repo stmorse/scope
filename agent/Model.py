@@ -33,7 +33,12 @@ class Model:
             model = model,
             tokenizer = tokenizer,
             )
-        tqdm.write(f'Initialized {get_role(role)} as {self.config["type"]} model: {self.config["model_config"]["pretrained_model_name_or_path"]}.')
+        # Print model name for both local and non-local (Ollama/Online) models
+        if "model_config" in self.config:
+            model_name = self.config["model_config"].get("pretrained_model_name_or_path", "unknown")
+        else:
+            model_name = self.config.get("name", "unknown")
+        tqdm.write(f'Initialized {get_role(role)} as {self.config["type"]} model: {model_name}.')
 
     def sample_actions(self, prompt : Conversation, **kwargs) -> List[str]:
         # convo = Conversation.from_delimited_string(prompt)
@@ -78,9 +83,10 @@ class Model:
 def create_human_and_llm(config="agent/llm_config.yaml",human_sim_to_use="human_sim", human_eval_to_use="human_eval", llm_model_to_use ="llm_model", cuda = 0,**kwargs) -> List[Model]:
     with open(config, "r") as f:
         llm_config = yaml.full_load(f)
-    llm_config[llm_model_to_use]["model_config"]["device_map"] = cuda
-    llm_config[human_sim_to_use]["model_config"]["device_map"] = cuda
-    llm_config[human_eval_to_use]["model_config"]["device_map"] = cuda
+    # Only set device_map if 'model_config' exists (i.e., for local models)
+    for key in [llm_model_to_use, human_sim_to_use, human_eval_to_use]:
+        if "model_config" in llm_config[key]:
+            llm_config[key]["model_config"]["device_map"] = cuda
     models = []
     models_to_use = [human_sim_to_use, human_eval_to_use, llm_model_to_use]
     for model, model_type in zip(models_to_use, [HUMAN_SIM, HUMAN_EVAL, LLM]):

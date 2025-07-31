@@ -11,7 +11,8 @@ class Ollama_LLM(LLM):
         self.generation_config = model_config["generation_config"]
         self.system_prompt = model_config["sys_prompt"]
         # Use the specified base URL for the Ollama service
-        self.client = OllamaClient(base_url=model_config.get("base_url", "http://ollama-brewster:80"))
+        # OllamaClient expects 'host', not 'base_url'
+        self.client = OllamaClient(host=model_config.get("base_url", "http://ollama-brewster:80"))
 
     def generate(self, chat: List[dict], **kwargs) -> List[str]:
         print("generating responses in ollama...")

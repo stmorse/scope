@@ -1,0 +1,11 @@
+python3 -u evaluation/run_evaluation_singular.py \
+    --reward_func=harmful \
+    --cuda_for_llm_reward=0 \
+    --cuda_for_q_embedding_transition=1 \
+    --lr=0.0001 \
+    --evaluation_depth=4 \
+    --mcts_time=5 \
+    --agent=pure_online \
+    --result_file=camera \
+    --trials=1 \
+    --evaluation_data=conversation_starter.txt
