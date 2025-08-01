@@ -6,7 +6,7 @@ python3 -u evaluation/run_evaluation.py \
     --evaluation_depth=4 \
     --mcts_time=5 \
     --agent=semantic_online \
-    --result_file=camera \
+    --result_file=semantic \
     --trials=1 \
     --evaluation_data=conversation_starter.txt \
     --maximize_harm
