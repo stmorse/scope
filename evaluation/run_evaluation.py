@@ -52,6 +52,7 @@ parser.add_argument("--use_icl", default=False, action="store_true")
 parser.add_argument("--use_descriptions", default=False, action="store_true")
 parser.add_argument("--seed", default=42, type=int)
 parser.add_argument("--config", default="agent/llm_config.yaml")
+parser.add_argument("--maximize_harm", action="store_true", help="Invert the Llama_2_Guard_Reward to maximize harm instead of minimize.")
 args = vars(parser.parse_args())
 print("command-line args: ", args)
 
@@ -117,7 +118,7 @@ if reward_func == "length_human":
 if reward_func == "length_both":
     reward_function = Embedding_Length_Reward(add_llm_length=True, device_map=cuda_reward)
 if reward_func == "harmful":
-    reward_function = Llama_2_Guard_Reward(device_map=cuda_reward)
+    reward_function = Llama_2_Guard_Reward(device_map=cuda_reward, maximize_harm=args.get("maximize_harm", False))
 
 agents = []
 agent_type = []

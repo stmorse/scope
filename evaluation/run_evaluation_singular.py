@@ -193,6 +193,8 @@ np.random.seed(seed)
 torch.manual_seed(seed)
 random.seed(seed)
 
+print("\n\n\nDEBUG here\n\n")
+
 # create the mdp environment for evaluation
 evaluation_conversation_env = conversation_environment(human_eval, llm_agent, "", max_depth=evaluation_action_depth*2, reward_function=reward_function)
 for agent,type in zip(agents, agent_type):

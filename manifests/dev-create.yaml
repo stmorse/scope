@@ -7,6 +7,8 @@ spec:
   securityContext:
     runAsUser: 270999
     runAsGroup: 1132
+  nodeSelector:
+    kubernetes.io/hostname: gu13.sciclone.wm.edu
   containers:
     - name: dev-scope
       image: ghcr.io/stmorse/scope:latest
@@ -28,6 +30,11 @@ spec:
       env:
         - name: HF_HOME
           value: '/sciclone/home/stmorse/.cache/huggingface/hub'
+        - name: HF_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: hf-secret
+              key: HF_TOKEN
       volumeMounts:
         - name: home
           mountPath: /sciclone/home/stmorse

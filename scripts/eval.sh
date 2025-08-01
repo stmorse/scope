@@ -1,4 +1,4 @@
-python3 -u evaluation/run_evaluation_singular.py \
+python3 -u evaluation/run_evaluation.py \
     --reward_func=harmful \
     --cuda_for_llm_reward=0 \
     --cuda_for_q_embedding_transition=0 \

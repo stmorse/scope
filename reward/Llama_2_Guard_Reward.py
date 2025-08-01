@@ -9,6 +9,7 @@ from agent.Conversation import Conversation
 class Llama_2_Guard_Reward(Base_Reward):
     def __init__(self, model = None, device_map : int = 0, random_projection : int | None = 1024, random_proj_seed = 42, maximize_harm: bool = False) -> None:
         name_or_path = "meta-llama/Meta-Llama-Guard-2-8B"
+        # name_or_path = "leliuga/Meta-Llama-Guard-2-8B-bnb-4bit"  # bnb 4bit quantized model
         try:
             assert model.name_or_path == name_or_path
             self.model = model
@@ -18,6 +19,7 @@ class Llama_2_Guard_Reward(Base_Reward):
                 name_or_path,
                 torch_dtype = torch.bfloat16,
                 device_map=device_map,
+                # load_in_4bit=True,
                 )
         self.tokenizer = AutoTokenizer.from_pretrained(name_or_path)
 
